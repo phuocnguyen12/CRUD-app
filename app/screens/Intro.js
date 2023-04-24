@@ -8,10 +8,17 @@ import {
   StatusBar,
   Dimensions,
 } from "react-native";
+import RoundIconBtn from "../components/RoundIconBtn";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Intro = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const handleOnChangeText = (text) => setName(text);
+
+  const handleSubmit = async () => {
+    const user = { name: name };
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+  };
 
   return (
     <>
@@ -24,6 +31,9 @@ const Intro = () => {
           placeholder="Enter Name"
           style={styles.textInput}
         />
+        {name.trim().length >= 3 ? (
+          <RoundIconBtn antIconName="doubleright" onPress={handleSubmit} />
+        ) : null}
       </View>
     </>
   );
