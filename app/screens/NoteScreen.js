@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, StatusBar } from "react-native";
+import NoteInputModal from "../components/NoteInputModal";
 import RoundIconBtn from "../components/RoundIconBtn";
 import colors from "../misc/colors";
 
 const NoteScreen = ({ user }) => {
   const [greet, setGreet] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const findGreet = () => {
     const hrs = new Date().getHours();
@@ -18,6 +20,10 @@ const NoteScreen = ({ user }) => {
     findGreet();
   }, []);
 
+  const handleOnSubmit = (title, destination, date, rick, desc) => {
+    console.log(title, destination, date, rick, desc);
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor={colors.PRIMARY} />
@@ -28,19 +34,24 @@ const NoteScreen = ({ user }) => {
         >
           <Text style={styles.emptyHeader}>Add Notes</Text>
           <RoundIconBtn
-            onPress={() => console.log("opening modal")}
+            onPress={() => setModalVisible(true)}
             antIconName="plus"
             style={styles.addBtn}
           />
         </View>
       </View>
+      <NoteInputModal
+        visible={modalVisible}
+        onclose={() => setModalVisible(false)}
+        onSubmit={handleOnSubmit}
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     borderBottomColor: colors.PRIMARY,
     borderBottomWidth: 1,
