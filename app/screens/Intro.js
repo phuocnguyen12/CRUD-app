@@ -55,11 +55,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
     paddingLeft: 15,
-    frontSize: 15,
+    fontSize: 20,
     marginBottom: 15,
   },
   inputTitle: {
     alignSelf: "flex-start",
+    fontSize: 20,
     paddingLeft: 25,
     marginBottom: 5,
     opacity: 0.5,
