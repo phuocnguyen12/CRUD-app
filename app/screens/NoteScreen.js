@@ -13,12 +13,16 @@ import {
 } from "react-native";
 import Note from "../components/Note";
 import NoteInputModal from "../components/NoteInputModal";
+import NotFound from '../components/NotFound';
 import RoundIconBtn from "../components/RoundIconBtn";
+import SearchBar from "../components/SearchBar";
 import colors from "../misc/colors";
 
 const NoteScreen = ({ user }) => {
   const [greet, setGreet] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [resultNotFound, setResultNotFound] = useState(false);
   const [notes, setNotes] = useState("");
 
   const findGreet = () => {
@@ -54,22 +58,61 @@ const NoteScreen = ({ user }) => {
     await AsyncStorage.setItem("notes", JSON.stringify(updatedNotes));
   };
 
+  const handleOnSearchInput = async (text) => {
+    setSearchQuery(text);
+    if (!text.trim()) {
+      setSearchQuery("");
+      setResultNotFound(false);
+      return await findNotes();
+    }
+    const filteredNotes = notes.filter((note) => {
+      if (note.title.toLowerCase().includes(text.toLowerCase())) {
+        return note;
+      }
+    });
+
+    if (filteredNotes.length) {
+      setNotes([...filteredNotes]);
+    } else {
+      setResultNotFound(true);
+    }
+  };
+
+  const handleOnClear = async () => {
+    setSearchQuery("");
+    setResultNotFound(false);
+    await findNotes();
+  };
+
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor={colors.PRIMARY} />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <Text style={styles.header}>{`Good ${greet} ${user.name}`}</Text>
-          <FlatList
-            data={notes}
-            numColumns={2}
-            columnWrapperStyle={{
-              justifyContent: "space-between",
-              marginBottom: 15,
-            }}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <Note item={item} />}
-          />
+          {notes.length ? (
+            <SearchBar
+              value={searchQuery}
+              onChangeText={handleOnSearchInput}
+              containerStyle={{ marginVertical: 15 }}
+              onClear={handleOnClear}
+            />
+          ) : null}
+
+          {resultNotFound ? (
+            <NotFound />
+          ) : (
+            <FlatList
+              data={notes}
+              numColumns={2}
+              columnWrapperStyle={{
+                justifyContent: "space-between",
+                marginBottom: 15,
+              }}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => <Note item={item} />}
+            />
+          )}
           <RoundIconBtn
             onPress={() => setModalVisible(true)}
             antIconName="plus"
